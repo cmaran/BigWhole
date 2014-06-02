@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}My Events{% endblock %}
+
+{% block css %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/datatables.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <h1>My Events</h1>
+    
+    <table id="questionsTable" class="datatable table table-striped table-bordered table-hover">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Type</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/datatables.js') }}"></script>
+    
+    <script>
+        $(document).ready(function() {
+            table = $('#questionsTable').dataTable({
+                "bProcessiong" : true,
+                "sAjaxSource" : "{{ url_for('userEventsJSON') }}",
+                "aoColumns" : [
+                    {"bVisible" : false, "bSearchable" : false},
+                    null,
+                    null
+                ],
+                // Callback to make rows links to detail page
+                "fnDrawCallback" : function() {
+                    $("#questionsTable tbody tr").click(function() {
+                        var position = table.fnGetPosition(this);
+                        var id = table.fnGetData(position)[0];
+                        document.location.href = "/e/view/" + id;
+                    });
+                }
+            });
+
+
+            // Stuff needed for bootstrap skin of DataTables
+            $('.datatable').each(function(){
+                var datatable = $(this);
+                // SEARCH - Add the placeholder for Search and Turn this into in-line form control
+                var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
+                search_input.attr('placeholder', 'Search');
+                search_input.addClass('form-control input-sm');
+            });
+        });
+    </script>
+{% endblock %}

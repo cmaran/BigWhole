@@ -1,0 +1,14 @@
+.hideOverflow td
+{
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    text-align:left;
+    table-layout:fixed;
+}
+
+.hundatTable
+{
+        table-layout:fixed;
+	width:100%;
+}

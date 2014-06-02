@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Event: {{ event["name"] }}{% endblock %}
+
+{% block content %}
+    <h1>Event: {{ event["name"] }}</h1>
+
+    <p><strong>Event Type:</strong> {{ event['eventtype'] }}</p>
+    <p><strong>Invited Users:</strong> {{ ", ".join(event['users']) }}</p>
+    <p><strong>Duration:</strong> {{ event['duration'] }} Minutes</p>
+    <p><strong>Owner:</strong> {{ event['owner'] }}</p>
+    {% if "finalDate" in event %}
+        <p><strong>Final Date:</strong> {{ event['finalDate'] }}</p>
+    {% endif %}
+
+    {% if not event["finished"] %}
+
+        <div class="form-horizontal">
+
+            <legend>Accept date</legend>
+
+            <div class="form-group">
+                  <label class="col-md-4 control-label" for="tasktype">Event Type</label>
+                  <div class="col-md-5">
+                    <select id="date" name="date" class="form-control">
+                        {% for x in dates %}
+                            <option value="{{ x }}">{{ x }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-md-4">
+                <button id="acceptDate" name="acceptDate" class="btn btn-primary" onclick="submitDate()">Accept Date</button>
+              </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+    {% if session["email"] == event["owner"] %}
+        <div class="form-horizontal">
+
+            <legend>Set final date</legend>
+
+            <div class="form-group">
+                  <label class="col-md-4 control-label" for="tasktype">Event Type</label>
+                  <div class="col-md-5">
+                    <select id="date" name="date" class="form-control">
+                        {% for x in dates %}
+                            <option value="{{ x }}">{{ x }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-md-4">
+                <button id="acceptDate" name="acceptDate" class="btn btn-primary" onclick="submitFinalDate()">Accept Date</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-md-4">
+                <button id="acceptDate" name="acceptDate" class="btn btn-danger" onclick="deleteEvent()">Delete Event</button>
+              </div>
+            </div>
+        </div>
+
+
+    {% endif %}
+
+    <h2>Comments</h2>
+
+    {% for x in event["comments"] %}
+        <p>{{ x["user"] }}: {{ x["comment"] }} {% if session["email"] == event["owner"] %}<button class="btn btn-danger" onclick="deleteComment({{ loop.index0 }})">Delete Comment</button>{% endif %}</p>
+    {% endfor %}
+
+    <div class="form-horizontal">
+        <legend>Add comment</legend>
+
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="comment">Comment</label>
+              <div class="col-md-5">                     
+                <textarea class="form-control" id="comment" name="comment"></textarea>
+              </div>
+            </div>
+
+        <div class="form-group">
+          <div class="col-md-4">
+            <button id="addComment" name="addComment" class="btn btn-primary" onclick="submitComment()">Add Comment</button>
+          </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    
+    <script>
+        function submitDate() {
+            $.post("{{ url_for('acceptEventDate') }}",
+                    {"user" : "{{ session['email'] }}",
+                    "date" : $("select#date").val(),
+                     "event" : "{{ event['id'] }}"},
+                    function() {
+                        alert("ok");
+                    },
+                    "text"
+            );
+        }
+
+        function submitFinalDate() {
+            $.post("{{ url_for('setFinalEventDate') }}",
+                    {"date" : $("select#date").val(),
+                     "event" : "{{ event['id'] }}"},
+                    function() {
+                        location.reload();
+                    },
+                    "text"
+            );
+        }
+
+        function deleteEvent() {
+            $.post("{{ url_for('deleteEvent') }}",
+                    {"event" : "{{ event['id'] }}"},
+                    function() {
+                        alert("ok");
+                    },
+                    "text"
+            );
+        }
+
+        function deleteComment(commentId) {
+            $.post("{{ url_for('deleteComment') }}",
+                    {"event" : "{{ event['id'] }}",
+                     "commentId" : commentId},
+                    function() {
+                        location.reload();
+                    },
+                    "text"
+            );
+        }
+
+        function submitComment() {
+            $.post("{{ url_for('addComment') }}",
+                    {"user" : "{{ session['email'] }}",
+                    "comment" : $("textarea#comment").val(),
+                     "event" : "{{ event['id'] }}"},
+                    function() {
+                        location.reload();
+                    },
+                    "text"
+            );
+        }
+    </script>
+{% endblock %}

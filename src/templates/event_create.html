@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Event{% endblock %}
+
+{% block css %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/flick/jquery-ui.css">
+    <link href="{{ url_for('static', filename='css/jquery.tagit.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/alertify.core.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/alertify.bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="form-horizontal">
+        
+        <h1>Create new Event</h1>
+
+        <fieldset>
+
+            {# Form Name #}
+            <legend>General</legend>
+
+            {# Select Basic #}
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="tasktype">Event Type</label>
+              <div class="col-md-5">
+                <select id="eventtype" name="eventtype" class="form-control">
+                    {% for x in [
+                        ('Group'),
+                        ('Single')
+                    ] %}
+                        <option value="{{ x }}">{{ x }}</option>
+                    {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            {# Text input#}
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="cat">Name</label> 
+              <div class="col-md-5">
+              <input id="name" name="name" placeholder="Name" class="form-control input-md" required="" type="text">
+              </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="duration">Duration</label>  
+                <div class="col-md-5">
+                   <input id="hours" name="value" value=0 size=3/>
+                   <input id="minutes" name="value" value=0  size=2/> 
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="tags">Invite users</label>  
+              <div class="col-md-5">
+                <ul id="users"></ul>
+              </div>
+            </div>
+
+            <legend>Dates</legend>
+
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="date">Date</label>  
+                <div class="col-md-5">
+                    <div class='input-group date' id='date0'>
+                          <input type='text' class="form-control" />
+                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                          </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="date">Date</label>  
+                <div class="col-md-5">
+                    <div class='input-group date' id='date1'>
+                          <input type='text' class="form-control" />
+                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                          </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="date">Date</label>  
+                <div class="col-md-5">
+                    <div class='input-group date' id='date2'>
+                          <input type='text' class="form-control" />
+                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                          </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="date">Date</label>  
+                <div class="col-md-5">
+                    <div class='input-group date' id='date3'>
+                          <input type='text' class="form-control" />
+                          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                          </span>
+                    </div>
+                </div>
+            </div>
+
+            <legend>Submit</legend>
+
+            {# Button #}
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="createEvent"></label>
+              <div class="col-md-4">
+                <button id="createEvent" name="createEvent" class="btn btn-primary" onclick="submit()">Create Event</button>
+              </div>
+            </div>
+
+        </fieldset>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/tag-it.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/alertify.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-datetimepicker.min.js') }}"></script>
+    
+    <script>
+        // duration spinner setup
+        $(function () {
+             $('#minutes').spinner({
+                 spin: function (event, ui) {
+                     if (ui.value >= 60) {
+                         $(this).spinner('value', ui.value - 60);
+                         $('#hours').spinner('stepUp');
+                         return false;
+                     } else if (ui.value < 0) {
+                         $(this).spinner('value', ui.value + 60);
+                         $('#hours').spinner('stepDown');
+                         return false;
+                     }
+                 }
+             });
+             $('#hours').spinner({
+                 min: 0});
+        });
+
+        // Date Picker setup
+        $(function() {
+            $("#date0").datetimepicker({
+                format: "DD.MM.YYYY HH:mm",
+                pick12HourFormat: false
+            });
+        });
+        $(function() {
+            $("#date1").datetimepicker({
+                format: "DD.MM.YYYY HH:mm",
+                pick12HourFormat: false
+            });
+        });
+        $(function() {
+            $("#date2").datetimepicker({
+                format: "DD.MM.YYYY HH:mm",
+                pick12HourFormat: false
+            });
+        });
+        $(function() {
+            $("#date3").datetimepicker({
+                format: "DD.MM.YYYY HH:mm",
+                pick12HourFormat: false
+            });
+        });
+
+        // user invite autocomplete field setup
+        $(document).ready(function() {
+            $("#users").tagit({
+                availableTags : {{ registeredUsers|tojson|safe }},
+                autocomplete : {delay : 0, minLength : 2},
+                allowSpaces : true,
+                placeholderText : "emails"
+            });
+        });
+		
+		// submits the createEvent form
+        function submit() {
+            $.post("{{ url_for('createEvent') }}",
+                    {"eventtype" : $("select#eventtype").val(),
+                     "name" : $("input#name").val(),
+                     "duration" : $("#minutes").spinner("value") + ($("#hours").spinner("value")*60),
+                     "users" : JSON.stringify($("#users").tagit("assignedTags")),
+                     "dates" : JSON.stringify([$("#date0").data("DateTimePicker").getDate().unix(),
+                                $("#date1").data("DateTimePicker").getDate().unix(),
+                                $("#date2").data("DateTimePicker").getDate().unix(),
+                                $("#date3").data("DateTimePicker").getDate().unix()
+                                ])},
+                    function() {
+                        alertify.success("Created Event");
+                    },
+                    "text"
+            ).fail(function() {
+                alertify.error("Error on creating Event");
+            });
+            }
+
+    </script>
+{% endblock %}
+

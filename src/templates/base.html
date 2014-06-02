@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <title>{% block title %}{% endblock %} - BigWhole</title>
+
+        {% block css %}
+            <!-- Bootstrap -->
+            <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+            <link href="{{ url_for('static', filename='css/footer.css') }}" rel="stylesheet">
+        {% endblock %}
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+          <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-static-top" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="#">BigWhole</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    {%- for endpoint, caption in [
+                        ('index', 'Home'),
+                        ('listUsers', 'Users'),
+                        ('createEvent', 'Create New Event')
+                    ] %}
+                        <li{% if endpoint == request.endpoint %} class="active" {% endif %}>
+                            <a href="{{ url_for(endpoint) }}">{{ caption }}</a>
+                        </li>
+                    {%- endfor %}
+                </ul>
+                {% if "email" in session %}
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><p class="navbar-text">{{ session.get('email') }}</p></li>
+                        <li><a href="{{ url_for("userEvents") }}">My Events</a></li>
+                        <li><a href="{{ url_for("logout") }}">Logout</a></li>
+                    </ul>
+                {% else %}
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="{{ url_for("login") }}">Login</a></li>
+                        <li><a href="{{ url_for("register") }}">Register</a></li>
+                    </ul>
+                {% endif %} 
+            </div><!--/.nav-collapse -->
+          </div>
+        </div>
+
+        <div class="container container-fluid main-container">
+            {% block content %}
+            {%  endblock %}
+        </div>
+
+        <div id="footer">
+            <div class="container">
+                <p class="text-muted">BigWhole<br>Copyright (c) 2014, Maran, Putz, Schulmeister, Suschny</p>
+            </div>
+        </div>
+
+        {% block scripts %}
+            <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+            <!-- Include all compiled plugins (below), or include individual files as needed -->
+            <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        {% endblock %}
+
+    </body>
+</html>
